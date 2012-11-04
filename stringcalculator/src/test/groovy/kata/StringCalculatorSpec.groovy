@@ -22,12 +22,10 @@ import spock.lang.Unroll
  */
 class StringCalculatorSpec extends Specification {
 
-    private StringCalculator calculator = new StringCalculator()
-
     @Unroll
     def "calculations"() {
         expect:
-        calculator.run(input) == result
+        CalculatorFactory.create(input).sum(input) == result
 
         where:
         input                     | result
@@ -57,7 +55,7 @@ class StringCalculatorSpec extends Specification {
         def input = "-1"
 
         when:
-        calculator.run(input)
+        CalculatorFactory.create(input).sum(input)
 
         then:
         thrown IllegalArgumentException

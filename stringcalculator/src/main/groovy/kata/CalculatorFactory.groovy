@@ -1,5 +1,7 @@
 package kata
 
+import java.util.regex.Pattern
+
 /**
  * Created with IntelliJ IDEA.
  * User: BeoXTC
@@ -14,7 +16,7 @@ class CalculatorFactory {
     private static String multiCharDelimiterPattern = /\[.*\]/
 
     static Calculator create(String input) {
-        if(userDefinedDelimitersOn(input)) {
+        if(hasUserDefinedDelimiters(input)) {
             if(hasMultiCharDelimiters(input)) {
                 return new MultiCharCalculator()
             }
@@ -26,10 +28,10 @@ class CalculatorFactory {
     }
 
     private static boolean hasMultiCharDelimiters(String input) {
-        input.matches(multiCharDelimiterPattern)
+        Pattern.compile(multiCharDelimiterPattern).matcher(input).find()
     }
 
-    private static boolean userDefinedDelimitersOn(String input) {
+    private static boolean hasUserDefinedDelimiters(String input) {
         input.startsWith(userDefinedDelimiterMark)
     }
 }
