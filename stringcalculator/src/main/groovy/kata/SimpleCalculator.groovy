@@ -12,10 +12,10 @@ class SimpleCalculator implements Calculator {
     protected def simpleDelimiterRegex = /,|\n/
     @Override
     int sum(String input) {
-        return input.empty ? 0 : sumOfEachInteger(input)
+        return input.empty ? 0 : sumOfAllInteger(input)
     }
 
-    int sumOfEachInteger(String input) {
+    int sumOfAllInteger(String input) {
         input.trim().split(simpleDelimiterRegex)*.toInteger().sum (ignoringValuesOverOneThousend)
     }
 
