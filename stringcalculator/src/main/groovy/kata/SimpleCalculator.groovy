@@ -1,5 +1,7 @@
 package kata
 
+import java.util.regex.Pattern
+
 /**
  * Created with IntelliJ IDEA.
  * User: BeoXTC
@@ -9,7 +11,7 @@ package kata
  */
 class SimpleCalculator implements Calculator {
 
-    protected def simpleDelimiterRegex = /,|\n/
+    private def simpleDelimiterRegex = /,|\n/
     @Override
     int sum(String input) {
         return input.empty ? 0 : sumOfAllInteger(input)
@@ -19,16 +21,20 @@ class SimpleCalculator implements Calculator {
         input.trim().split(simpleDelimiterRegex)*.toInteger().sum (ignoringValuesOverOneThousend)
     }
 
-    def ignoringValuesOverOneThousend = {
-        exceptionOnNegatives(it)
-        if(it <= 1000)
-            return it
+    def ignoringValuesOverOneThousend = { number ->
+        exceptionOnNegatives(number)
+        if(number <= 1000)
+            return number
         return 0
     }
     
-    def exceptionOnNegatives = {        
-        if(it < 0) {
+    def exceptionOnNegatives (int number) {        
+        if(number < 0) {
             throw new IllegalArgumentException()
         }
+    }
+    
+    void appendToDelimiterRegex(String delimiter) {
+        simpleDelimiterRegex += "|${Pattern.quote(delimiter)}"
     }
 }
