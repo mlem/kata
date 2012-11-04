@@ -1,7 +1,5 @@
 package kata
 
-import java.util.regex.Pattern
-
 /**
  * Created with IntelliJ IDEA.
  * User: BeoXTC
@@ -10,17 +8,17 @@ import java.util.regex.Pattern
  * To change this template use File | Settings | File Templates.
  */
 class MultiCharCalculator extends SimpleCalculator {
-    private String input;
+    private String input
 
     @Override
     int sum(String input) {
-        this.input = input;
-        
-        userDefinedDelimiters.each {simpleDelimiterRegex += "|${Pattern.quote(it)}"}
+        this.input = input
+
+        userDefinedDelimiters.each {appendToDelimiterRegex(it)}
         input = input.substring(input.indexOf("\n"))
         super.sum(input)
     }
-    
+
     private Iterable<String> getUserDefinedDelimiters() {
         def delimiter = input.substring(3, input.indexOf('\n')-1)
         delimiter.split(/\]\[/).toList()

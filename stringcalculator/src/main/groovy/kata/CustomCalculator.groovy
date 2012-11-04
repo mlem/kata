@@ -1,6 +1,5 @@
 package kata
 
-import java.util.regex.Pattern
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,7 +12,7 @@ class CustomCalculator extends SimpleCalculator {
     @Override
     int sum(String input) {
         char customDelimiter = input.charAt(2)
-        simpleDelimiterRegex += "|${Pattern.quote(customDelimiter.toString())}"
+        appendToDelimiterRegex(customDelimiter.toString())
         input = input.substring(4)
         return super.sum(input)  
     }
