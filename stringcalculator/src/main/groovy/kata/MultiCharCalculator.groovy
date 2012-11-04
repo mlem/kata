@@ -23,6 +23,6 @@ class MultiCharCalculator extends SimpleCalculator {
     
     private Iterable<String> getUserDefinedDelimiters() {
         def delimiter = input.substring(3, input.indexOf('\n')-1)
-        delimiter.split(/\]\[/).collect()
+        delimiter.split(/\]\[/).toList()
     }
 }
