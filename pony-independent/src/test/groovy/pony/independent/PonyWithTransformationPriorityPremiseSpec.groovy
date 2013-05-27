@@ -1,7 +1,12 @@
 package pony.independent
 
+import org.hamcrest.CoreMatchers
+import org.junit.Assert
 import spock.lang.Specification
 import spock.lang.Unroll
+
+import static org.hamcrest.CoreMatchers.either
+import static org.hamcrest.CoreMatchers.hasItem
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,9 +37,9 @@ class PonyWithTransformationPriorityPremiseSpec extends Specification {
     def "using constants" () {
           expect:
         poniesToInvite('0 0') == []
-        poniesToInvite('1 0') == [[0:[]]]
-        poniesToInvite('2 0') == [[0:[]], [1:[]]]
-        poniesToInvite('2 1\n0 1') == [[0:[1]], [1:[0]]]
+        poniesToInvite('1 0')*.toMap() == [[0:[]]]
+        poniesToInvite('2 0')*.toMap() == [[0:[]], [1:[]]]
+        poniesToInvite('2 1\n0 1')*.toMap() == [[0:[1]], [1:[0]]]
 
     }
 
@@ -55,10 +60,41 @@ class PonyWithTransformationPriorityPremiseSpec extends Specification {
         partySort(poniesToInvite('3 2\n0 1\n1 2'))*.toMap() == [[1:[0, 2]], [0:[1]], [2:[1]]]
     }
 
+    def "drop one with most relationships"() {
+        expect:
+        dropLargest(poniesToInvite('3 2\n0 1\n1 2'))*.toMap() == [[0:[]], [2:[]]]
+        dropLargest(poniesToInvite('5 3\n1 2\n2 3\n3 4'))*.toMap() as Set == [[0:[]], [1:[]], [3:[4]], [4:[3]]] as Set
+    }
+
+    def "drop relations until there are no more"() {
+        given:
+        def graph = poniesToInvite('5 3\n1 2\n2 3\n3 4')
+
+        when:
+        while(graph.any {!it.relations.empty}) {
+            graph = dropLargest(graph)
+        }
+
+        then:
+        graph.size() == 3
+        graph*.node.findAll {it in [3, 4]} != [3, 4]
+        graph.each { assert it.node in [0,1] || it.node == 3 || it.node == 4}
+        //graph*.node as Set == [0, 1, { it == 3 || it == 4}]
+        Assert.assertThat(graph*.node, CoreMatchers.is(either(hasItem(3)).or(hasItem(4))))
+    }
+
+    def dropLargest(List list) {
+        def sortedList = partySort(list)
+        def removedPony = list.remove(0)
+        list.each {
+            it.relations -= removedPony
+        }
+        list
+    }
 
     def partySort(List input) {
-        input.sort {Map a, Map b ->
-            b.values().toArray()[0].size().compareTo(a.values().toArray()[0].size())
+        input.sort {VertexNode a, VertexNode b ->
+            b.relations.size().compareTo(a.relations.size())
         }
     }
 
@@ -73,24 +109,34 @@ class PonyWithTransformationPriorityPremiseSpec extends Specification {
         def ponyData = parseInput(data)
         def numberOfPonies = ponyData.numberOfPonies
         if(numberOfPonies == 0) return []
-        def graph = initializaGraph(numberOfPonies)
+        def graph = initializeGraph(numberOfPonies)
         ponyData.records.each { edge ->
-            graph[edge[0]][edge[0]] << edge[1]
-            graph[edge[1]][edge[1]] << edge[0]
+            graph[edge[0]].relations << graph[edge[1]]
+            graph[edge[1]].relations << graph[edge[0]]
         }
         graph
     }
 
-    private def initializaGraph(int numberOfPonies) {
+    private def initializeGraph(int numberOfPonies) {
         (0..numberOfPonies - 1).collect([]) {
+
+            return new VertexNode(node:it)
+        }
+    }
+
+    class VertexNode {
+        def node
+        def relations = []
+
+        Map toMap() {
             def map = [:]
-            map.put(it, [])
+            map.put(node, relations*.node)
             return map
         }
     }
 
     class PonyDTO {
         int numberOfPonies
-        def records = []
+        def records
     }
 }
