@@ -12,8 +12,9 @@ subprojects {
     }
     
     dependencies {
-        groovy 'org.codehaus.groovy:groovy:latest.release'
-        testCompile 'junit:junit:latest.release'
-        testCompile "org.spockframework:spock-core:latest.release"
+        groovy 'org.codehaus.groovy:groovy:1.8.6'
+        compile 'com.google.guava:guava:latest.integration'
+        testCompile 'junit:junit:4.10'
+        testCompile "org.spockframework:spock-core:0.7-groovy-1.8"
     }
 }

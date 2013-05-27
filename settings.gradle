@@ -1,1 +1,1 @@
-include 'pony-independent'
+include 'files', 'primefactors', 'game' , 'stringcalculator'
