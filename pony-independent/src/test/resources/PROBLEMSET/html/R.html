@@ -1,0 +1,63 @@
+<html>
+<head><title>R. Squares</title></head>
+<body>
+<div align="justify">
+
+<h2>R. Squares</h2>
+<table border=0 cellpadding=0 cellspacing=0>
+<tr><td align="justify">
+Your third IT startup having failed in a row, you have no other choice but to
+seek a job at Mandatory Suit Corp. On your first workday, your task is to optimize
+the output of some cryptic, unlabelled sales diagrams.
+
+<p>
+As it happens, you must use the in-house Mandatory Suit Graphics Library.
+This library lacks any sort of documentation, but you're a resourceful person,
+and reverse-engineered the usable API. This wasn't very difficult, though -
+apparently there is only one call, and that draws 1px thick, axis-aligned black
+unfilled rectangles.
+
+<p>
+Your task is to analyze the input images, and output a list of calls that draw
+the same image, using the least possible amount of drawing operations.
+<td> &nbsp;&nbsp;&nbsp;&nbsp;
+<td align="right">
+<img src="squares_small.jpg">
+<br>
+<font size=-3>source:<br>http://www.optical-illusionist.com/illusions/bulging-squares</font>
+</table>
+
+<h3>Input</h3>
+<p>
+Each input is an arbitrarily sized png image that contains black (RGB 0,0,0) and
+white (255,255,255) pixels.
+
+<h3>Output</h3>
+<p>
+The output is a text file that contains:
+<ul>
+	<li>the coordinates of two pixels on each line
+	<li>each line is 4 integers separated by whitespace, then an endline
+	<li>in the following order: <b>X1 Y1 X2 Y2</b>
+	<li>the range of X coordinates is <b>0 .. width-1, from left to right</b>
+	<li>the range of Y coordinates is <b>0 .. height-1, from top to bottom</b>
+</ul>
+
+<p>
+Beginning with a white image, each output line draws a black unfilled rectangle
+between the specified pixels. After drawing all rectangles, the image must be
+identical to the original input.
+
+<p>
+We will not accept outputs that contain more lines than the number of pixels
+in the source image or more bytes than 10000000.
+
+<h3>Score</h3>
+<p>
+This task uses scaled scoring. For each input, the team with the shortest
+correct solution gets 100 points (as well as all other teams with solutions
+that are the same length). Longer solutions get progressively less points.
+
+</div>
+</body>
+</html>
