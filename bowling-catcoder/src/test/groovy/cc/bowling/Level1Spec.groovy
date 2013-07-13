@@ -4,24 +4,8 @@ import spock.lang.Ignore
 import spock.lang.Specification;
 
 
-class TestSpec extends Specification {
+class Level1Spec extends Specification {
 
-    def "integration test"() {
-        def input = [6, 3, 1, 6, 5, -2, 4]
-        def output = [2, 1, -2, 3, -2]
-
-        def solution = new Solution()
-
-        def result = solution.calculate(input)
-        def anzahlPaare = output[0]
-        def erstesPaar = [output[1], output[2]]
-        def zweitesPaar = [output[3], output[4]]
-
-        expect:
-        assert result.anzahlPaare == anzahlPaare
-        assert result.pairs[0] == erstesPaar
-        assert result.pairs[1] == zweitesPaar
-    }
 
     def "parsing String to numberlist"() {
         when:
@@ -79,6 +63,23 @@ class TestSpec extends Specification {
         solution.anzahlPaare == 2
     }
 
+    def "test sample"() {
+        def input = [6, 3, 1, 6, 5, -2, 4]
+        def output = [2, 1, -2, 3, -2]
+
+        def solution = new Solution()
+
+        def result = solution.calculate(input)
+        def anzahlPaare = output[0]
+        def erstesPaar = [output[1], output[2]]
+        def zweitesPaar = [output[3], output[4]]
+
+        expect:
+        assert result.anzahlPaare == anzahlPaare
+        assert result.pairs[0] == erstesPaar
+        assert result.pairs[1] == zweitesPaar
+    }
+
     def "with string input"() {
         def input = "6 3 1 6 5 -2 4"
         def output = [2, 1, -2, 3, -2]
@@ -108,7 +109,48 @@ class TestSpec extends Specification {
         def zweitesPaar = [output[3], output[4]]
 
         expect:
-        assert result.toOutput() == output
+        assert result.toPairOutput() == output
+    }
+
+    def "it depends on the sorting of the array"() {
+        when:
+        def solution = new Solution().calculate([4, -2, 3, -5, 1])
+
+        then:
+        solution.pairs[0] == [-2, 1]
+        solution.pairs[1] == [-2, 3]
+        solution.anzahlPaare == 2
+    }
+
+    def "it has to work with longer integer arrays"() {
+        when:
+        def solution = new Solution().calculate([6, -2, 3, -5, 1, 4, 6])
+
+        then:
+        solution.pairs[0] == [-5, 4]
+        solution.pairs[1] == [-5, 6]
+        solution.pairs[2] == [-2, 1]
+        solution.pairs[3] == [-2, 3]
+        solution.anzahlPaare == 4
+    }
+
+    def "it has with whole left and right search"() {
+        when:
+        def solution = new Solution().calculate([6, 1, 6, -2, 3, -5, -4])
+
+        then:
+        solution.pairs[0] == [-2, 3]
+        solution.pairs[1] == [1, -2]
+        solution.pairs[2] == [3, -4]
+        solution.pairs[3] == [6, -5]
+        solution.anzahlPaare == 4
+    }
+
+    def "get a group of integers by their type"() {
+        expect:
+        new Solution().nextGroup([1, 2, -1, -2, -3, 1, 2, 3]) == [1, 2]
+        new Solution().nextGroup([-1, -2, -3, 1, 2, 3]) == [-1, -2, -3]
+        new Solution().nextGroup([1, 2, 3]) == [1, 2, 3]
     }
 
 
