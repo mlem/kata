@@ -16,5 +16,6 @@ subprojects {
         compile 'com.google.guava:guava:latest.integration'
         testCompile 'junit:junit:latest.integration'
         testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
+        testCompile 'cglib:cglib-nodep:2.2'
     }
 }
