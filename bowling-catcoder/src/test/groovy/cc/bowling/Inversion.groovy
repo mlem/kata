@@ -5,4 +5,8 @@ class Inversion {
     int firstIndex
     int secondNumber
     int secondIndex
+
+    String toOutputString() {
+        "$firstNumber $firstIndex $secondNumber $secondIndex"
+    }
 }

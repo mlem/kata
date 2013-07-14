@@ -26,7 +26,7 @@ class InversionSolver extends Solution {
 
     }
 
-    void invert(Inversion inversion) {
+    private void invert(Inversion inversion) {
         if (permutations[inversion.firstIndex] + permutations[inversion.secondIndex] == 1) {
             invert(inversion.firstIndex, inversion.secondIndex - 1)
         } else {
@@ -34,19 +34,19 @@ class InversionSolver extends Solution {
         }
     }
 
-    void invert(int firstIndex, int secondIndex) {
+    private void invert(int firstIndex, int secondIndex) {
         def list = permutations[firstIndex..secondIndex]
         def reversedList = list.reverse()
         permutations[firstIndex..secondIndex] = reversedList.collect { it * -1 }
     }
 
-    List<Inversion> filterInversions(List<Integer> integers) {
-        if(integers[0] == integers.size()+1) {
+    private List<Inversion> filterInversions(List<Integer> integers) {
+        if(integers[0] == integers.size()-1) {
             return []
         }
         def inversionNumbers = integers[(integers[0]+1)..-1]
         def inversions = []
-        for (int i = 0; i < inversionNumbers.size(); i = i + 4) {
+        for (int i = 0; i <= inversionNumbers.size()-4; i = i + 4) {
             inversions << new Inversion(
                     firstNumber: inversionNumbers[i],
                     firstIndex: inversionNumbers[i + 1],
@@ -60,7 +60,7 @@ class InversionSolver extends Solution {
 
     int calculatePunktzahl() {
         inversion()
-        return calculatePairs().size();  //To change body of created methods use File | Settings | File Templates.
+        return calculatePairs().size();
     }
 
 

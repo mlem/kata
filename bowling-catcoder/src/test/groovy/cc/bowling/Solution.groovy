@@ -17,21 +17,9 @@ class Solution {
         this.permutations = filterPermutations(integers)
     }
 
-    Pairs calculatePairs() {
 
-        def positiveGroup = permutations.findAll {
-            it >= 0
-        }
-        def negativeGroup = permutations.findAll {
-            it < 0
-        }
 
-        calculatePairsForGroups(positiveGroup, negativeGroup)
-        pairs.sort(true) { a, b -> a[1] <=> b[1] }
-        pairs.sort(true) { a, b -> a[0] <=> b[0] }
 
-        new Pairs(pairs)
-    }
 
     ArrayList<Integer> filterPermutations(ArrayList<Integer> integers) {
         List list = integers.clone()
@@ -41,26 +29,8 @@ class Solution {
         list
     }
 
-    private void calculatePairsForGroups(List firstGroupOfIntegers, List secondGroupOfIntegers) {
-        firstGroupOfIntegers.each { pos ->
-            secondGroupOfIntegers.each { neg ->
-                addOrientedPair(pos, neg)
-            }
-
-        }
-    }
 
 
-
-
-    void addOrientedPair(int firstNumber, int secondNumber) {
-        if ((firstNumber.abs() - secondNumber.abs()).abs() == 1) {
-            if (permutations.indexOf(firstNumber) < permutations.indexOf(secondNumber))
-                pairs << [firstNumber, secondNumber]
-            else
-                pairs << [secondNumber, firstNumber]
-        }
-    }
 
 
     int getAnzahlPaare() {
@@ -91,5 +61,9 @@ class Solution {
         num >= 0
     }
 
-
+    def calculatePairs() {
+        def pairs = new Pairs(permutations)
+        pairs.calculatePairs()
+        pairs
+    }
 }
