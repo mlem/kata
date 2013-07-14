@@ -4,17 +4,15 @@ class Solution {
 
     List pairs = []
 
-    List integers
+    List permutations
+    List<Integer> inversedPermutation
 
-    Solution calculate(ArrayList<Integer> integers) {
-        def anzahlAnPermutationen = integers.remove(0)
-        assert integers.size() == anzahlAnPermutationen
-        this.integers = integers
+    Solution calculatePairs(ArrayList<Integer> input) {
 
-        def positiveGroup = integers.findAll {
+        def positiveGroup = input.findAll {
             it >= 0
         }
-        def negativeGroup = integers.findAll {
+        def negativeGroup = input.findAll {
             it < 0
         }
 
@@ -23,6 +21,14 @@ class Solution {
         pairs.sort(true) { a, b -> a[0] <=> b[0] }
 
         this
+    }
+
+    ArrayList<Integer> filterPermutations(ArrayList<Integer> integers) {
+        def list = integers.clone()
+        def anzahlAnPermutationen = list.remove(0)
+        list = list.subList(0, anzahlAnPermutationen)
+        assert list.size() == anzahlAnPermutationen
+        list
     }
 
     private void calculatePairsForGroups(List firstGroupOfIntegers, List secondGroupOfIntegers) {
@@ -36,13 +42,14 @@ class Solution {
 
     Solution calculate(String input) {
         def integers = new Parser().parse(input)
-        return calculate(integers)
+        permutations = filterPermutations(integers)
+        return calculatePairs(permutations)
     }
 
 
     void addOrientedPair(int firstNumber, int secondNumber) {
         if ((firstNumber.abs() - secondNumber.abs()).abs() == 1) {
-            if(integers.indexOf(firstNumber) < integers.indexOf(secondNumber))
+            if (permutations.indexOf(firstNumber) < permutations.indexOf(secondNumber))
                 pairs << [firstNumber, secondNumber]
             else
                 pairs << [secondNumber, firstNumber]
@@ -85,4 +92,53 @@ class Solution {
     boolean type(int num) {
         num >= 0
     }
+
+    Solution inversion(String input) {
+        def integers = new Parser().parse(input)
+        def permutation = filterPermutations(integers)
+        //def pairs = calculatePairs(permutations)
+        def inversions = filterInversions(integers)
+
+        inversedPermutation = permutation
+        inversions.each { Inversion inversion ->
+            inversedPermutation = invert(inversedPermutation, inversion)
+        }
+        this
+
+    }
+
+    List invert(ArrayList<Integer> integers, Inversion inversion) {
+        if (integers[inversion.firstIndex] + integers[inversion.secondIndex] == 1) {
+            invert(integers, inversion.firstIndex, inversion.secondIndex - 1)
+        } else {
+            invert(integers, inversion.firstIndex + 1, inversion.secondIndex)
+        }
+    }
+
+    List invert(ArrayList<Integer> integers, int firstIndex, int secondIndex) {
+        def list = integers[firstIndex..secondIndex]
+        def reversedList = list.reverse()
+        integers[firstIndex..secondIndex] = reversedList.collect { it * -1 }
+        return integers
+    }
+
+    List<Inversion> filterInversions(List<Integer> integers) {
+        def inversionNumbers = integers[integers[0]+1..-1]
+        def inversions = []
+        for (int i = 0; i < inversionNumbers.size(); i = i + 4) {
+            inversions << new Inversion(
+                    firstNumber: inversionNumbers[i],
+                    firstIndex: inversionNumbers[i + 1],
+                    secondNumber: inversionNumbers[i + 2],
+                    secondIndex: inversionNumbers[i + 3]
+            )
+        }
+        return inversions
+    }
+
+    String toInversionOutput() {
+        inversedPermutation.join(" ")
+    }
+
+
 }
