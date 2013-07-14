@@ -7,18 +7,18 @@ class ViralChecker {
 
     def calculateMinimumInversions(String input, int counter) {
         Solution solution = new InversionSolver(input)
-        def pairs = solution.calculatePairs()
+        def pairs = new Pairs(solution.permutations)
         if(pairs.size() == 0) {
             return counter
         }
         def inversions = []
-        pairs.each  { pair ->
-            inversions << new Inversion(firstIndex: solution.permutations.indexOf(pair[0]), secondIndex: solution.permutations.indexOf(pair[1]))
+        pairs.each  { Pair pair ->
+            inversions << new Inversion(firstIndex: solution.permutations.indexOf(pair.x), secondIndex: solution.permutations.indexOf(pair.y))
         }
         int currentMaxPoints = 0
         InversionSolver currentSolver = null
         for(Inversion inv in inversions) {
-            def solver = new InversionSolver(input + " 0 ${inv.firstIndex} 0 ${inv.secondIndex}")
+            def solver = new InversionSolver(input + inv.toOutputString())
             int punkte = solver.calculatePunktzahl()
             if(punkte > currentMaxPoints) {
                 currentSolver = solver
