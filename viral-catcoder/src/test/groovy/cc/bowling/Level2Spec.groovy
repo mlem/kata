@@ -10,9 +10,9 @@ class Level2Spec extends Specification {
         def input = "6 3 1 6 5 -2 4 1 1 -2 4"
         def pairOutput = "2 1 -2 3 -2"
 
-        def solution = new Solution()
+        def solution = new Permutation()
 
-        def result = solution.calculatePairs(input)
+        def result = solution.getPairs(input)
 
         expect:
         assert result.toPairOutput() == pairOutput
@@ -22,12 +22,12 @@ class Level2Spec extends Specification {
         def input = "6 3 1 6 5 -2 4 1 1 -2 4"
         def output = "3 1 2 -5 -6 4"
 
-        def solution = new Solution()
+        def solution = new Permutation()
 
         def result = solution.inversion(input)
 
         expect:
-        assert result.toInversionOutput() == output
+        assert result.toResultString() == output
     }
 
     def "inversion from sample with integers"() {
@@ -35,7 +35,7 @@ class Level2Spec extends Specification {
         def inversion = new Inversion(firstNumber: 1, firstIndex: 1, secondNumber: -2, secondIndex: 4)
         def output = [3, 1, 2, -5, -6, 4]
 
-        def solution = new Solution()
+        def solution = new Permutation()
 
         def result = solution.invert(input, inversion)
 
@@ -47,7 +47,7 @@ class Level2Spec extends Specification {
         def input = [4, 2, 3, -1, 5]
         def inversion = new Inversion(firstIndex: 1, secondIndex: 3)
 
-        def solution = new Solution()
+        def solution = new Permutation()
 
         expect:
         solution.invert(input, inversion) == [4, -3, -2, -1, 5]
@@ -57,7 +57,7 @@ class Level2Spec extends Specification {
         def input = [5, -2, 4, 1, 6]
         def inversion = new Inversion(firstIndex: 1, secondIndex: 3)
 
-        def solution = new Solution()
+        def solution = new Permutation()
 
         expect:
         solution.invert(input, inversion) == [5, -2, -1, -4, 6]

@@ -7,7 +7,7 @@ import spock.lang.Specification;
 @Ignore
 class Level1Spec extends Specification {
 
-    def solution = new Solution()
+    def solution = new Permutation()
 
     def "parsing String to numberlist"() {
         when:
@@ -21,7 +21,7 @@ class Level1Spec extends Specification {
         when:
         def input = [2, 0, -1]
         this.solution.permutations = this.solution.filterPermutations(input)
-        def solution = this.solution.calculatePairs(input)
+        def solution = this.solution.getPairs(input)
 
         then:
         solution.pairs[0] == [0, -1]
@@ -32,7 +32,7 @@ class Level1Spec extends Specification {
         when:
         def input = [2, 3, -1]
         this.solution.permutations = this.solution.filterPermutations(input)
-        def solution = this.solution.calculatePairs(input)
+        def solution = this.solution.getPairs(input)
 
         then:
         solution.anzahlPaare == 0
@@ -43,7 +43,7 @@ class Level1Spec extends Specification {
         when:
         def input = [2, 2, -1]
         this.solution.permutations = this.solution.filterPermutations(input)
-        def solution = this.solution.calculatePairs(input)
+        def solution = this.solution.getPairs(input)
 
         then:
         solution.pairs[0] == [2, -1]
@@ -54,7 +54,7 @@ class Level1Spec extends Specification {
         when:
         def input = [3, 0, 2, -1]
         this.solution.permutations = this.solution.filterPermutations(input)
-        def solution = this.solution.calculatePairs(input)
+        def solution = this.solution.getPairs(input)
 
         then:
         solution.pairs[0] == [0, -1]
@@ -67,7 +67,7 @@ class Level1Spec extends Specification {
         when:
         def input = [4, 0, 3, 2, -1]
         this.solution.permutations = this.solution.filterPermutations(input)
-        def solution = this.solution.calculatePairs(input)
+        def solution = this.solution.getPairs(input)
 
         then:
         solution.pairs[0] == [0, -1]
@@ -82,7 +82,7 @@ class Level1Spec extends Specification {
         this.solution.permutations = this.solution.filterPermutations(input)
         def solution = this.solution
 
-        def result = solution.calculatePairs(input)
+        def result = solution.getPairs(input)
         def anzahlPaare = output[0]
         def erstesPaar = [output[1], output[2]]
         def zweitesPaar = [output[3], output[4]]
@@ -99,7 +99,7 @@ class Level1Spec extends Specification {
 
         def solution = this.solution
 
-        def result = solution.calculatePairs(input)
+        def result = solution.getPairs(input)
         def anzahlPaare = output[0]
         def erstesPaar = [output[1], output[2]]
         def zweitesPaar = [output[3], output[4]]
@@ -116,7 +116,7 @@ class Level1Spec extends Specification {
 
         def solution = this.solution
 
-        def result = solution.calculatePairs(input)
+        def result = solution.getPairs(input)
 
         expect:
         assert result.toPairOutput() == output
@@ -126,7 +126,7 @@ class Level1Spec extends Specification {
         when:
         def input = [4, -2, 3, -5, 1]
         this.solution.permutations = this.solution.filterPermutations(input)
-        def solution = this.solution.calculatePairs(input)
+        def solution = this.solution.getPairs(input)
 
         then:
         solution.pairs[0] == [-2, 1]
@@ -139,7 +139,7 @@ class Level1Spec extends Specification {
         when:
         def input = [6, -2, 3, -5, 1, 4, 6]
         this.solution.permutations = this.solution.filterPermutations(input)
-        def solution = this.solution.calculatePairs(input)
+        def solution = this.solution.getPairs(input)
 
         then:
         solution.pairs[0] == [-5, 4]
@@ -153,7 +153,7 @@ class Level1Spec extends Specification {
         when:
         def input = [6, 1, 6, -2, 3, -5, -4]
         this.solution.permutations = this.solution.filterPermutations(input)
-        def solution = this.solution.calculatePairs(input)
+        def solution = this.solution.getPairs(input)
 
         then:
         solution.pairs[0] == [-2, 3]

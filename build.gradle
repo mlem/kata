@@ -12,7 +12,7 @@ subprojects {
     }
     
     dependencies {
-        groovy 'org.codehaus.groovy:latest.integration'
+        groovy 'org.codehaus.groovy:groovy-all:latest.integration'
         compile 'com.google.guava:guava:latest.integration'
         testCompile 'junit:junit:latest.integration'
         testCompile "org.spockframework:spock-core:0.7-groovy-2.0"

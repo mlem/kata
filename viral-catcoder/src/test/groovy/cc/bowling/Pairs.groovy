@@ -3,10 +3,9 @@ package cc.bowling
 class Pairs extends ArrayList {
 
     final List permutations
-    public Pairs(ArrayList permutations) {
+    public Pairs(List permutations) {
         this.permutations = permutations
     }
-
 
     void calculatePairs() {
 
@@ -23,7 +22,6 @@ class Pairs extends ArrayList {
 
     }
 
-
     private void calculatePairsForGroups(List firstGroupOfIntegers, List secondGroupOfIntegers) {
         firstGroupOfIntegers.each { pos ->
             secondGroupOfIntegers.each { neg ->
@@ -32,9 +30,6 @@ class Pairs extends ArrayList {
 
         }
     }
-
-
-
 
     void addOrientedPair(int firstNumber, int secondNumber) {
         if ((firstNumber.abs() - secondNumber.abs()).abs() == 1) {

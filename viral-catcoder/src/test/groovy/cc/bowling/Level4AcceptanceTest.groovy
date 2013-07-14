@@ -2,7 +2,7 @@ package cc.bowling
 
 import spock.lang.Specification
 
-class Level4IntegrationTest extends Specification {
+class Level4AcceptanceTest extends Specification {
 
     def "first input"() {
         def input = "8 0 3 1 6 5 -2 4 7"
