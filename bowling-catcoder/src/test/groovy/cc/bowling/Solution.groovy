@@ -61,7 +61,7 @@ class Solution {
         num >= 0
     }
 
-    def calculatePairs() {
+    Pairs calculatePairs() {
         def pairs = new Pairs(permutations)
         pairs.calculatePairs()
         pairs
