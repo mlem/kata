@@ -99,7 +99,7 @@ class Level1Spec extends Specification {
 
         def solution = this.solution
 
-        def result = solution.calculate(input)
+        def result = solution.calculatePairs(input)
         def anzahlPaare = output[0]
         def erstesPaar = [output[1], output[2]]
         def zweitesPaar = [output[3], output[4]]
@@ -116,7 +116,7 @@ class Level1Spec extends Specification {
 
         def solution = this.solution
 
-        def result = solution.calculate(input)
+        def result = solution.calculatePairs(input)
 
         expect:
         assert result.toPairOutput() == output
