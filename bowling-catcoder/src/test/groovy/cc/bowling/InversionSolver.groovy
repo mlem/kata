@@ -26,15 +26,16 @@ class InversionSolver extends Solution {
 
     }
 
-    private void invert(Inversion inversion) {
+    InvertedResult invert(Inversion inversion) {
         if (permutations[inversion.firstIndex] + permutations[inversion.secondIndex] == 1) {
             invert(inversion.firstIndex, inversion.secondIndex - 1)
         } else {
             invert(inversion.firstIndex + 1, inversion.secondIndex)
         }
+        new InvertedResult(permutations)
     }
 
-    private void invert(int firstIndex, int secondIndex) {
+    void invert(int firstIndex, int secondIndex) {
         def list = permutations[firstIndex..secondIndex]
         def reversedList = list.reverse()
         permutations[firstIndex..secondIndex] = reversedList.collect { it * -1 }

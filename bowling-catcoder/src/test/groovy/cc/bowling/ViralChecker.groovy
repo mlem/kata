@@ -6,28 +6,32 @@ class ViralChecker {
     }
 
     def calculateMinimumInversions(String input, int counter) {
-        Solution solution = new InversionSolver(input)
-        def pairs = new Pairs(solution.permutations)
-        if(pairs.size() == 0) {
+        InversionSolver solution = new InversionSolver(input)
+        Inversion currentInversion = findInversionWithMostPoints(input)
+        if(currentInversion == null) {
             return counter
         }
+        InvertedResult result =solution.invert(currentInversion)
+        def newInputString = "${result.size()} ${result.toInversionOutput()}"
+        println newInputString
+        return calculateMinimumInversions(newInputString, ++counter)
+
+    }
+
+    Inversion findInversionWithMostPoints(String input) {
+        InversionSolver solution = new InversionSolver(input)
+        def pairs = solution.calculatePairs()
         def inversions = []
-        pairs.each  { Pair pair ->
-            inversions << new Inversion(firstIndex: solution.permutations.indexOf(pair.x), secondIndex: solution.permutations.indexOf(pair.y))
+        pairs.each { Pair pair ->
+            inversions << new Inversion(
+                    firstIndex: solution.permutations.indexOf(pair.x),
+                    firstNumber:  pair.x,
+                    secondIndex: solution.permutations.indexOf(pair.y),
+                    secondNumber: pair.y)
         }
-        int currentMaxPoints = 0
-        InversionSolver currentSolver = null
-        for(Inversion inv in inversions) {
-            def solver = new InversionSolver(input + inv.toOutputString())
-            int punkte = solver.calculatePunktzahl()
-            if(punkte > currentMaxPoints) {
-                currentSolver = solver
-                currentMaxPoints = punkte
-            }
-
+        inversions.max {
+            def solver = new InversionSolver(input+ " " + it.toOutputString())
+            solver.calculatePunktzahl()
         }
-        def result = currentSolver.inversion()
-        return calculateMinimumInversions(result.toInversionOutput(), counter++)
-
     }
 }
