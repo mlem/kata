@@ -7,7 +7,7 @@ class Inversion {
     int secondIndex
 
 
-    InvertedPermutation invertPermutation(Permutation permutation) {
+    Permutation invertPermutation(Permutation permutation) {
         if (permutation[firstIndex] + permutation[secondIndex] == 1) {
             invert(permutation, firstIndex, secondIndex - 1)
         } else {
@@ -16,14 +16,10 @@ class Inversion {
     }
 
     private Permutation invert(Permutation permutation, int firstIndex, int secondIndex) {
-        InvertedPermutation tmpPermutations = new InvertedPermutation(permutation.input)
-        def list = tmpPermutations[firstIndex..secondIndex]
+        def list = permutation[firstIndex..secondIndex]
         def reversedList = list.reverse()
-        tmpPermutations[firstIndex..secondIndex] = reversedList.collect { it * -1 }
-        tmpPermutations
+        permutation[firstIndex..secondIndex] = reversedList.collect { it * -1 }
+        permutation
     }
 
-    String toOutputString() {
-        "$firstNumber $firstIndex $secondNumber $secondIndex"
-    }
 }
