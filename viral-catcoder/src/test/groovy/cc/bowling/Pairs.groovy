@@ -31,16 +31,16 @@ class Pairs extends ArrayList {
         }
     }
 
-    void addOrientedPair(int firstNumber, int secondNumber) {
-        if ((firstNumber.abs() - secondNumber.abs()).abs() == 1) {
-            if (permutations.indexOf(firstNumber) < permutations.indexOf(secondNumber))
-                this << new Pair([firstNumber, secondNumber])
+    void addOrientedPair(int x, int y) {
+        if ((x.abs() - y.abs()).abs() == 1) {
+            if (permutations.indexOf(x) < permutations.indexOf(y))
+                this << new Pair([x, y])
             else
-                this << new Pair([secondNumber, firstNumber])
+                this << new Pair([y, x])
         }
     }
 
-    String toPairOutput() {
+    String toOutputString() {
         StringBuffer sb = new StringBuffer()
         sb.append(this.size())
         sb.append(" ")

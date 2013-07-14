@@ -1,36 +1,29 @@
 package cc.bowling
 
 class ViralChecker {
+    Builder builder
+
     def calculateMinimumInversions(String input) {
-        return calculateMinimumInversions(input, 0)
+        builder = new Builder(input: input)
+        return calculateMinimumInversions(0)
     }
 
-    def calculateMinimumInversions(String input, int counter) {
-        Permutation solution = new Permutation(input)
-        Inversion currentInversion = findInversionWithMostPoints(input)
-        if(currentInversion == null) {
+    def calculateMinimumInversions(int counter) {
+        Inversion currentInversion = findInversionWithMostPoints()
+        if (currentInversion == null) {
             return counter
         }
-        InvertedPermutation result =currentInversion.invertPermutation(solution)
-        def newInputString = "${result.size()} ${result.toResultString()}"
-        //println newInputString
-        return calculateMinimumInversions(newInputString, ++counter)
+        Permutation result = currentInversion.invertPermutation(builder.createPermutation())
+        builder.input = result.toInputString()
+        return calculateMinimumInversions(++counter)
 
     }
 
-    Inversion findInversionWithMostPoints(String input) {
-        Permutation permutation = new Permutation(input)
-        def inversions = []
-        permutation.pairs.each { Pair pair ->
-            inversions << new Inversion(
-                    firstIndex: permutation.indexOf(pair.x),
-                    firstNumber:  pair.x,
-                    secondIndex: permutation.indexOf(pair.y),
-                    secondNumber: pair.y)
-        }
-        inversions.max {
-            def solver = new Inverter()
-            solver.calculatePunktzahl(input+ " " + it.toOutputString())
+    Inversion findInversionWithMostPoints() {
+        def inversions = builder.createInversionsFromPermutation()
+        inversions.max { Inversion inversion ->
+            def invertedPermutation = inversion.invertPermutation(builder.createPermutation())
+            invertedPermutation.calculatePoints()
         }
     }
 }

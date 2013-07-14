@@ -15,7 +15,7 @@ class Level2Spec extends Specification {
         def result = solution.getPairs(input)
 
         expect:
-        assert result.toPairOutput() == pairOutput
+        assert result.toOutputString() == pairOutput
     }
 
     def "inversion from sample"() {

@@ -15,14 +15,15 @@ class Level4Spec extends Specification {
 
     def "get biggest pair"() {
         def input = "8 0 3 1 6 5 -2 4 7"
-        def permutation = new Permutation(input)
+        def builder = new Builder(input: input)
+        def permutation = builder.createPermutation()
         when:
-        def pairs = permutation.getPairs()
+        def pairs = permutation.calculatePairs()
         then:
-        pairs.toPairOutput() == "2 1 -2 3 -2"
+        pairs.toOutputString() == "2 1 -2 3 -2"
         when:
-        def solution = new ViralChecker()
-        def result = solution.findInversionWithMostPoints(input)
+        def solution = new ViralChecker(builder: builder)
+        def result = solution.findInversionWithMostPoints()
 
         then:
         result.secondNumber == -2

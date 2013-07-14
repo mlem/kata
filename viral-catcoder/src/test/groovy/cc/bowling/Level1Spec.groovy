@@ -119,7 +119,7 @@ class Level1Spec extends Specification {
         def result = solution.getPairs(input)
 
         expect:
-        assert result.toPairOutput() == output
+        assert result.toOutputString() == output
     }
 
     def "it depends on the sorting of the array"() {
