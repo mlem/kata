@@ -4,15 +4,25 @@ class Solution {
 
     List pairs = []
 
-    List permutations
-    List<Integer> inversedPermutation
+    final List permutations
+    ArrayList integers
 
-    Solution calculatePairs(ArrayList<Integer> input) {
+    public Solution(ArrayList integers) {
+        this.integers = integers
+        this.permutations = filterPermutations(integers)
+    }
 
-        def positiveGroup = input.findAll {
+    public Solution(String input) {
+        integers = new Parser().parse(input)
+        this.permutations = filterPermutations(integers)
+    }
+
+    Pairs calculatePairs() {
+
+        def positiveGroup = permutations.findAll {
             it >= 0
         }
-        def negativeGroup = input.findAll {
+        def negativeGroup = permutations.findAll {
             it < 0
         }
 
@@ -20,11 +30,11 @@ class Solution {
         pairs.sort(true) { a, b -> a[1] <=> b[1] }
         pairs.sort(true) { a, b -> a[0] <=> b[0] }
 
-        this
+        new Pairs(pairs)
     }
 
     ArrayList<Integer> filterPermutations(ArrayList<Integer> integers) {
-        def list = integers.clone()
+        List list = integers.clone()
         def anzahlAnPermutationen = list.remove(0)
         list = list.subList(0, anzahlAnPermutationen)
         assert list.size() == anzahlAnPermutationen
@@ -40,11 +50,7 @@ class Solution {
         }
     }
 
-    Solution calculate(String input) {
-        def integers = new Parser().parse(input)
-        permutations = filterPermutations(integers)
-        return calculatePairs(permutations)
-    }
+
 
 
     void addOrientedPair(int firstNumber, int secondNumber) {
@@ -61,15 +67,7 @@ class Solution {
         pairs.size()
     }
 
-    String toPairOutput() {
-        StringBuffer sb = new StringBuffer()
-        sb.append(pairs.size())
-        sb.append(" ")
-        sb.append(pairs.collect { pair ->
-            "${pair[0]} ${pair[1]}"
-        }.join(" "))
-        return sb.toString();
-    }
+
 
     ArrayList<Integer> nextGroup(ArrayList<Integer> integers) {
         def iter = integers.iterator()
@@ -93,57 +91,5 @@ class Solution {
         num >= 0
     }
 
-    Solution inversion(String input) {
-        def integers = new Parser().parse(input)
-        permutations = filterPermutations(integers)
-        //def pairs = calculatePairs(permutations)
-        def inversions = filterInversions(integers)
 
-        inversedPermutation = permutations
-        inversions.each { Inversion inversion ->
-            inversedPermutation = invert(inversedPermutation, inversion)
-        }
-        this
-
-    }
-
-    List invert(ArrayList<Integer> integers, Inversion inversion) {
-        if (integers[inversion.firstIndex] + integers[inversion.secondIndex] == 1) {
-            invert(integers, inversion.firstIndex, inversion.secondIndex - 1)
-        } else {
-            invert(integers, inversion.firstIndex + 1, inversion.secondIndex)
-        }
-    }
-
-    List invert(ArrayList<Integer> integers, int firstIndex, int secondIndex) {
-        def list = integers[firstIndex..secondIndex]
-        def reversedList = list.reverse()
-        integers[firstIndex..secondIndex] = reversedList.collect { it * -1 }
-        return integers
-    }
-
-    List<Inversion> filterInversions(List<Integer> integers) {
-        def inversionNumbers = integers[integers[0]+1..-1]
-        def inversions = []
-        for (int i = 0; i < inversionNumbers.size(); i = i + 4) {
-            inversions << new Inversion(
-                    firstNumber: inversionNumbers[i],
-                    firstIndex: inversionNumbers[i + 1],
-                    secondNumber: inversionNumbers[i + 2],
-                    secondIndex: inversionNumbers[i + 3]
-            )
-        }
-        return inversions
-    }
-
-    String toInversionOutput() {
-        inversedPermutation.join(" ")
-    }
-
-    int calculatePunktzahl(String input) {
-        def solution = new Solution()
-        solution.permutations = inversion(input).inversedPermutation
-        List result = solution.calculatePairs(inversedPermutation).pairs
-        return result.size();  //To change body of created methods use File | Settings | File Templates.
-    }
 }

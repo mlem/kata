@@ -3,6 +3,7 @@ package cc.bowling
 import spock.lang.Ignore
 import spock.lang.Specification
 
+@Ignore
 class Level2Spec extends Specification {
 
     def "handle new input correctly"() {
@@ -11,7 +12,7 @@ class Level2Spec extends Specification {
 
         def solution = new Solution()
 
-        def result = solution.calculate(input)
+        def result = solution.calculatePairs(input)
 
         expect:
         assert result.toPairOutput() == pairOutput
