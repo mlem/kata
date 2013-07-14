@@ -1,8 +1,10 @@
 package cc.bowling
 
+import spock.lang.Ignore
 import spock.lang.Specification;
 
 
+@Ignore
 class Level1Spec extends Specification {
 
     def solution = new Solution()
@@ -129,7 +131,8 @@ class Level1Spec extends Specification {
         then:
         solution.pairs[0] == [-2, 1]
         solution.pairs[1] == [-2, 3]
-        solution.anzahlPaare == 2
+        solution.pairs[2] == [4, -5]
+        solution.anzahlPaare == 3
     }
 
     def "it has to work with longer integer arrays"() {

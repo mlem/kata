@@ -95,11 +95,11 @@ class Solution {
 
     Solution inversion(String input) {
         def integers = new Parser().parse(input)
-        def permutation = filterPermutations(integers)
+        permutations = filterPermutations(integers)
         //def pairs = calculatePairs(permutations)
         def inversions = filterInversions(integers)
 
-        inversedPermutation = permutation
+        inversedPermutation = permutations
         inversions.each { Inversion inversion ->
             inversedPermutation = invert(inversedPermutation, inversion)
         }
@@ -140,5 +140,10 @@ class Solution {
         inversedPermutation.join(" ")
     }
 
-
+    int calculatePunktzahl(String input) {
+        def solution = new Solution()
+        solution.permutations = inversion(input).inversedPermutation
+        List result = solution.calculatePairs(inversedPermutation).pairs
+        return result.size();  //To change body of created methods use File | Settings | File Templates.
+    }
 }
