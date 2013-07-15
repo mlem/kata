@@ -10,6 +10,10 @@ class Pair {
         y = pair[1]
     }
 
+    List asList(){
+        [x, y]
+    }
+
     String toPairString() {
         "$x $y"
     }

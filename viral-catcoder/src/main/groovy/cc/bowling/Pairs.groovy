@@ -3,6 +3,7 @@ package cc.bowling
 class Pairs extends ArrayList {
 
     final List permutations
+
     public Pairs(List permutations) {
         this.permutations = permutations
     }
@@ -17,7 +18,7 @@ class Pairs extends ArrayList {
         }
 
         calculatePairsForGroups(positiveGroup, negativeGroup)
-        this.sort(true) { Pair a,Pair b -> a.y <=> b.y }
+        this.sort(true) { Pair a, Pair b -> a.y <=> b.y }
         this.sort(true) { Pair a, Pair b -> a.x <=> b.x }
 
     }
