@@ -1,5 +1,6 @@
 package cc.bowling
 
+import spock.lang.Ignore
 import spock.lang.Specification;
 
 
@@ -37,7 +38,7 @@ class Level1Spec extends Specification {
     }
 
 
-    def "with 2 permutations"() {
+    def "with permutationLength 2"() {
         when:
         def input = [2, 2, -1]
         def permutation = builder.createPermutation(input)
@@ -48,7 +49,7 @@ class Level1Spec extends Specification {
         solution.size() == 1
     }
 
-    def "with 3 permutations"() {
+    def "with permutationLength 3"() {
         when:
         def input = [3, 0, 2, -1]
         def permutation = builder.createPermutation(input)
@@ -61,7 +62,7 @@ class Level1Spec extends Specification {
     }
 
 
-    def "with 4 permutations"() {
+    def "with permutationLength 4"() {
         when:
         def input = [4, 0, 3, 2, -1]
         def permutation = builder.createPermutation(input)
@@ -75,18 +76,17 @@ class Level1Spec extends Specification {
 
     def "test sample"() {
         def input = [6, 3, 1, 6, 5, -2, 4]
-        def output = [2, 1, -2, 3, -2]
 
         def permutation = builder.createPermutation(input)
         def result = permutation.calculatePairs()
-        def anzahlDerPaare = output[0]
-        def erstesPaar = [output[1], output[2]]
-        def zweitesPaar = [output[3], output[4]]
+        def numberOfPairs = 2
+        def firstPair = [1, -2]
+        def secondPair = [3, -2]
 
         expect:
-        assert result.size() == anzahlDerPaare
-        assert result[0].asList() == erstesPaar
-        assert result[1].asList() == zweitesPaar
+        assert result.size() == numberOfPairs
+        assert result[0].asList() == firstPair
+        assert result[1].asList() == secondPair
     }
 
     def "with string input"() {
@@ -156,6 +156,24 @@ class Level1Spec extends Specification {
         solution[2].asList() == [3, -4]
         solution[3].asList() == [6, -5]
         solution.size() == 4
+    }
+
+    @Ignore
+    def "for sebastian"() {
+        def input = "8 0 3 1 6 5 -2 4 7 1 2 -2 5"
+        def output = "2 1 -2 3 -2"
+        def builder = new Builder(input: input)
+        when:
+        def invertedPermutation = builder.createInversion().invertPermutation(builder.createPermutation())
+        then:
+        invertedPermutation.toResultString() == "0 3 1 2 -5 -6 4 7"
+        when:
+        Pairs pairs = invertedPermutation.calculatePairs()
+        then:
+        invertedPermutation.calculatePoints()
+        pairs.toOutputString() == ""
+
+
     }
 
 }
