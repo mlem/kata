@@ -26,8 +26,8 @@ class Level4Spec extends Specification {
         def result = solution.findInversionWithMostPoints()
 
         then:
-        result.secondNumber == -2
         result.firstNumber == 3
+        result.secondNumber == -2
         result.firstIndex == 1
         result.secondIndex == 5
     }
