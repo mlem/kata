@@ -11,6 +11,11 @@ class Builder {
         permutation.addAll(filterPermutations(integers))
         return permutation;  //To change body of created methods use File | Settings | File Templates.
     }
+    Permutation createPermutation(List integers) {
+        def permutation = new Permutation()
+        permutation.addAll(filterPermutations(integers))
+        return permutation;  //To change body of created methods use File | Settings | File Templates.
+    }
 
     List<Integer> filterPermutations(ArrayList<Integer> integers) {
         List list = integers.clone()
