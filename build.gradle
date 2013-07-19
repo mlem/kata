@@ -19,3 +19,8 @@ subprojects {
         testCompile 'cglib:cglib-nodep:2.2'
     }
 }
+
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.5'
+}
