@@ -10,8 +10,8 @@ class GameSpec extends Specification {
 
     def setup() {
         magic.matchFactory = [
-                newMatch: {firstPlayer, secondPlayer ->
-                    new TwoPlayerMatch(
+                newMatch: { firstPlayer, secondPlayer ->
+                    def match = new TwoPlayerMatch(
                             determinePlayerForTurnOne: new DeterminePlayerForTurnOne() {
                                 Player from(Player... players) {
                                     return players[0]
@@ -20,6 +20,9 @@ class GameSpec extends Specification {
                             firstPlayer: firstPlayer,
                             secondPlayer: secondPlayer
                     )
+                    firstPlayer.match = match
+                    secondPlayer.match = match
+                    return match
                 }]
 
         match = magic.startNewMatch()
@@ -81,17 +84,17 @@ class GameSpec extends Specification {
         def player = new Player()
         player.deck = new Deck(cards: [new Card(name: "A")])
         when:
-        player.drawACard()
+        player.drawCard()
         then:
         player.hand.size() == 1
         player.hand[0].name == "A"
-        player.deck.cards.size() == 0
+        player.deck.size() == 0
     }
 
     def "when a match is created the decks are shuffled"() {
         given:
         def match = GroovyMock(Match)
-        magic.matchFactory = [newMatch: {a, b -> match }]
+        magic.matchFactory = [newMatch: { a, b -> match }]
 
         when:
         magic.startNewMatch()
@@ -121,7 +124,37 @@ class GameSpec extends Specification {
         Deck deck = shuffler.shuffle(new Deck(cards: [new Card(name: "A"), new Card(name: "B")]))
 
         then:
-        deck.cards*.name == ["B", "A"]
+        deck*.name == ["B", "A"]
+    }
+
+    def "on start both players draw a hand"() {
+        given:
+        magic.firstPlayer = GroovyMock(Player)
+        magic.secondPlayer = GroovyMock(Player)
+
+        when:
+        match = magic.startNewMatch()
+
+        then:
+        1 * magic.firstPlayer.drawHand()
+        1 * magic.secondPlayer.drawHand()
+    }
+
+    def "player draws hand"() {
+        given:
+        match.handSize = handSize
+        def cards = (1..handSize).collect {new Card(name:"c$it")}
+        Player player = new Player(deck: new Deck(cards: cards), match: match)
+
+        when:
+        player.drawHand()
+
+        then:
+        player.hand == cards.reverse()
+        player.deck.isEmpty()
+
+        where:
+        handSize << [2, 3]
     }
 
     class NoOpShuffler implements Shuffler {
@@ -140,7 +173,7 @@ class GameSpec extends Specification {
 
         @Override
         Deck shuffle(Deck deck) {
-            return new Deck(cards: deck.cards.reverse())
+            return new Deck(cards: deck.reverse())
         }
     }
 
@@ -150,11 +183,11 @@ class GameSpec extends Specification {
     }
 
     class Deck {
-
-        List cards = []
+        @Delegate
+        LinkedList cards = []
 
         Card nextCard() {
-            return cards.pop()
+            return (Card)cards.pop()
         }
     }
 
@@ -165,14 +198,16 @@ class GameSpec extends Specification {
     class Magic {
 
         def matchFactory
+        Player firstPlayer = new Player(health: 20, name: "first", deck: new Deck(cards: []))
+        Player secondPlayer = new Player(health: 20, name: "second", deck: new Deck(cards: []))
 
         Match startNewMatch() {
-            def match = matchFactory.newMatch(new Player(health: 20, name: "first", deck: new Deck(cards: [])), new Player(health: 20, name: "second", deck: new Deck(cards: [])))
+            Match match = matchFactory.newMatch(firstPlayer, secondPlayer)
             match.shufflePlayerDecks()
+            match.drawPlayerHands()
             return match
         }
     }
-
 
     interface Match {
         Player findLoser()
@@ -186,6 +221,10 @@ class GameSpec extends Specification {
         Player getSecondPlayer()
 
         void nextTurn()
+
+        void drawPlayerHands()
+
+        def getHandSize()
     }
 
     class TwoPlayerMatch implements Match {
@@ -194,6 +233,7 @@ class GameSpec extends Specification {
         Player secondPlayer
         Player currentPlayer
         DeterminePlayerForTurnOne determinePlayerForTurnOne
+        def handSize = 2
 
         Player findLoser() {
             if (firstPlayer.health <= 0) {
@@ -218,6 +258,13 @@ class GameSpec extends Specification {
             currentPlayer = determinePlayerForTurnOne.from(firstPlayer, secondPlayer)
         }
 
+        @Override
+        void drawPlayerHands() {
+            firstPlayer.drawHand()
+            secondPlayer.drawHand()
+        }
+
+
         def shufflePlayerDecks() {
             firstPlayer.shuffleDeck()
             secondPlayer.shuffleDeck()
@@ -229,21 +276,26 @@ class GameSpec extends Specification {
         def name
         Deck deck
         List hand = []
+        Match match
 
         String toString() {
             "Player $name"
         }
 
-        def drawACard() {
-            hand << deck.nextCard()
+        def drawCard() {
+            if (!deck.isEmpty())
+                hand << deck.nextCard()
         }
 
         void shuffleDeck() {
-
         }
 
         def draws() {
 
+        }
+
+        def drawHand() {
+            match.handSize.times { drawCard() }
         }
     }
 
