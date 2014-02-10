@@ -6,11 +6,11 @@ import spock.lang.Specification
 class GameSpec extends Specification {
     Magic magic = new Magic()
 
-    Match game
+    Match match
 
     def setup() {
-        magic.gameFactory = [
-                newGame: {firstPlayer, secondPlayer ->
+        magic.matchFactory = [
+                newMatch: {firstPlayer, secondPlayer ->
                     new TwoPlayerMatch(
                             determinePlayerForTurnOne: new DeterminePlayerForTurnOne() {
                                 Player from(Player... players) {
@@ -22,57 +22,57 @@ class GameSpec extends Specification {
                     )
                 }]
 
-        game = magic.startNewGame()
+        match = magic.startNewMatch()
     }
 
-    def "two players in a game start with 20 health each"() {
+    def "two players in a match start with 20 health each"() {
         expect:
-        game.firstPlayer.health == 20
-        game.secondPlayer.health == 20
+        match.firstPlayer.health == 20
+        match.secondPlayer.health == 20
     }
 
-    def "the player with health 0 or less loses the game"() {
-        game[player].health = 0
+    def "the player with health 0 or less loses the match"() {
+        match[player].health = 0
         expect:
-        game.findLoser() == game[player]
+        match.findLoser() == match[player]
         where:
         player << ["firstPlayer", "secondPlayer"]
     }
 
-    def "the player with zero cards in his deck loses the game on his next draw"() {
-        game = magic.startNewGame()
-        game[player].deck = new Deck()
-        game[enemy].deck = new Deck(cards: [new Card()])
-        game.nextTurn()
+    def "the player with zero cards in his deck loses the match on his next draw"() {
+        match = magic.startNewMatch()
+        match[player].deck = new Deck()
+        match[enemy].deck = new Deck(cards: [new Card()])
+        match.nextTurn()
         when:
-        game.currentPlayer.draws()
+        match.currentPlayer.draws()
         then:
-        game.findLoser() == game[player]
+        match.findLoser() == match[player]
         where:
         player << ["firstPlayer", "secondPlayer"]
         enemy << ["secondPlayer", "firstPlayer"]
     }
 
 
-    def "game starts with both players hp at 20"() {
-        Match game = magic.startNewGame()
+    def "match starts with both players hp at 20"() {
+        Match match = magic.startNewMatch()
         expect:
-        game.firstPlayer.health == 20
-        game.secondPlayer.health == 20
+        match.firstPlayer.health == 20
+        match.secondPlayer.health == 20
     }
 
-    def "game has a decisionMaker about who starts the game"() {
-        game = magic.startNewGame()
+    def "match has a decisionMaker about who starts the match"() {
+        match = magic.startNewMatch()
         when:
-        game.nextTurn()
+        match.nextTurn()
         then:
-        game.currentPlayer == game.firstPlayer
+        match.currentPlayer == match.firstPlayer
     }
 
-    def "game over?"() {
-        game[player].health = 0
+    def "match over?"() {
+        match[player].health = 0
         expect:
-        game.isOver() == true
+        match.isOver() == true
         where:
         player << ["firstPlayer", "secondPlayer"]
     }
@@ -88,29 +88,29 @@ class GameSpec extends Specification {
         player.deck.cards.size() == 0
     }
 
-    def "when a game is created the decks are shuffled"() {
+    def "when a match is created the decks are shuffled"() {
         given:
-        def game = GroovyMock(Match)
-        magic.gameFactory = [newGame: {a, b -> game }]
+        def match = GroovyMock(Match)
+        magic.matchFactory = [newMatch: {a, b -> match }]
 
         when:
-        magic.startNewGame()
+        magic.startNewMatch()
 
         then:
-        1 * game.shufflePlayerDecks()
+        1 * match.shufflePlayerDecks()
     }
 
-    def "when a game is shuffling player decks, each player shuffles his own deck"() {
+    def "when a match is shuffling player decks, each player shuffles his own deck"() {
         given:
-        game.firstPlayer = GroovyMock(Player)
-        game.secondPlayer = GroovyMock(Player)
+        match.firstPlayer = GroovyMock(Player)
+        match.secondPlayer = GroovyMock(Player)
 
         when:
-        game.shufflePlayerDecks()
+        match.shufflePlayerDecks()
 
         then:
-        1 * game.firstPlayer.shuffleDeck()
-        1 * game.secondPlayer.shuffleDeck()
+        1 * match.firstPlayer.shuffleDeck()
+        1 * match.secondPlayer.shuffleDeck()
     }
 
     def "a shuffler which reverses the order of the deck"() {
@@ -164,12 +164,12 @@ class GameSpec extends Specification {
 
     class Magic {
 
-        def gameFactory
+        def matchFactory
 
-        Match startNewGame() {
-            def game = gameFactory.newGame(new Player(health: 20, name: "first", deck: new Deck(cards: [])), new Player(health: 20, name: "second", deck: new Deck(cards: [])))
-            game.shufflePlayerDecks()
-            return game
+        Match startNewMatch() {
+            def match = matchFactory.newMatch(new Player(health: 20, name: "first", deck: new Deck(cards: [])), new Player(health: 20, name: "second", deck: new Deck(cards: [])))
+            match.shufflePlayerDecks()
+            return match
         }
     }
 
