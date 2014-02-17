@@ -1,5 +1,6 @@
 package magic
 
+import spock.lang.Ignore
 import spock.lang.Specification
 
 
@@ -34,57 +35,76 @@ class GameSpec extends Specification {
         match.secondPlayer.health == 20
     }
 
+    @Ignore ("try to use some observer pattern (HealthObserver)")
     def "the player with health 0 or less loses the match"() {
+        given:
         match[player].health = 0
+
         expect:
-        match.findLoser() == match[player]
+        match.getLoser() == match[player]
+
         where:
         player << ["firstPlayer", "secondPlayer"]
     }
 
-    def "the player with zero cards in his deck loses the match on his next draw"() {
-        match = magic.startNewMatch()
-        match[player].deck = new Deck()
-        match[enemy].deck = new Deck(cards: [new Card()])
-        match.nextTurn()
+    def "first player loses because of deck starvation"() {
+        given:
+        match.firstPlayer.deck = new Deck()
+
         when:
-        match.currentPlayer.draws()
+        match.nextTurn()
+
         then:
-        match.findLoser() == match[player]
-        where:
-        player << ["firstPlayer", "secondPlayer"]
-        enemy << ["secondPlayer", "firstPlayer"]
+        match.loser == match.firstPlayer
+
+    }
+
+    def "second player loses because of deck starvation"() {
+        given:
+        match.firstPlayer.deck = new Deck(cards: [new Card()])
+        match.secondPlayer.deck = new Deck()
+
+        when:
+        match.nextTurn()
+        match.nextTurn()
+
+        then:
+        match.loser == match.secondPlayer
+
     }
 
 
     def "match starts with both players hp at 20"() {
-        Match match = magic.startNewMatch()
         expect:
         match.firstPlayer.health == 20
         match.secondPlayer.health == 20
     }
 
     def "match has a decisionMaker about who starts the match"() {
-        match = magic.startNewMatch()
         when:
         match.nextTurn()
+
         then:
         match.currentPlayer == match.firstPlayer
     }
 
     def "match over?"() {
         match[player].health = 0
+
         expect:
         match.isOver() == true
+
         where:
         player << ["firstPlayer", "secondPlayer"]
     }
 
     def "a player draws a card from his deck to his hand"() {
-        def player = new Player()
+        def player = new Player(match:new TwoPlayerMatch())
         player.deck = new Deck(cards: [new Card(name: "A")])
+
         when:
         player.drawCard()
+
         then:
         player.hand.size() == 1
         player.hand[0].name == "A"
@@ -143,7 +163,7 @@ class GameSpec extends Specification {
     def "player draws hand"() {
         given:
         match.handSize = handSize
-        def cards = (1..handSize).collect {new Card(name:"c$it")}
+        def cards = (1..handSize).collect { new Card(name: "c$it") }
         Player player = new Player(deck: new Deck(cards: cards), match: match)
 
         when:
@@ -155,6 +175,87 @@ class GameSpec extends Specification {
 
         where:
         handSize << [2, 3]
+    }
+
+    def "when match has next turn, player is notified"() {
+        given:
+        match.firstPlayer = GroovyMock(Player)
+        match.secondPlayer = GroovyMock(Player)
+        when:
+        match.nextTurn()
+        then:
+        1 * match.firstPlayer.whatDoYouWantToDoThisTurn()
+        when:
+        match.nextTurn()
+        then:
+        1 * match.secondPlayer.whatDoYouWantToDoThisTurn()
+        when:
+        match.nextTurn()
+        then:
+        1 * match.firstPlayer.whatDoYouWantToDoThisTurn()
+    }
+
+    def "a player draws a card on play turn"() {
+        given:
+        match.firstPlayer = GroovyMock(Player)
+        match.secondPlayer = GroovyMock(Player)
+        when:
+        match.nextTurn()
+        then:
+        1 * match.firstPlayer.drawCard()
+        when:
+        match.nextTurn()
+        then:
+        1 * match.secondPlayer.drawCard()
+        when:
+        match.nextTurn()
+        then:
+        1 * match.firstPlayer.drawCard()
+    }
+
+    def "a game with cpu controlled players"() {
+        given:
+        magic.firstPlayer = new DumbBotPlayer(deck:  new Deck(cards: [new Card(name:"A"), new Card(name:"B"), new Card(name:"C")]) )
+        magic.secondPlayer = new DumbBotPlayer(deck:  new Deck(cards: [new Card(name:"X"), new Card(name:"Y"), new Card(name:"Z")]) )
+
+        when:
+        def match = magic.startNewMatch()
+   //     match.nextTurn()
+
+        then:
+        match.timeline*.name == ["dA", "dB", "dX", "dY"]
+       // match.timeline*.name == ["dA", "dB", "dX", "dY", "dC", "pA", "dZ", "pX"]
+        //match.timeline*.name == ["AXBYCZ"]
+    }
+
+    class DumbBotPlayer extends Player {
+        @Override
+        void shuffleDeck() {
+            deck = new ReversingShuffler().shuffle(deck)
+        }
+    }
+
+    def "on deck starvation player is declaring lose"() {
+        given:
+        Player player = new Player()
+        player.match = GroovyMock(Match)
+        player.deck = new Deck()
+
+        when:
+        player.drawCard()
+
+        then:
+        1 * player.match.declareLoser(player)
+    }
+
+    def "declare loser gives us a loser and a winner"() {
+
+        when:
+        match.declareLoser(match.firstPlayer)
+
+        then:
+        match.loser == match.firstPlayer
+        match.winner == match.secondPlayer
     }
 
     class NoOpShuffler implements Shuffler {
@@ -187,7 +288,7 @@ class GameSpec extends Specification {
         LinkedList cards = []
 
         Card nextCard() {
-            return (Card)cards.pop()
+            return (Card) cards.pop()
         }
     }
 
@@ -210,7 +311,7 @@ class GameSpec extends Specification {
     }
 
     interface Match {
-        Player findLoser()
+        Player getLoser()
 
         boolean isOver()
 
@@ -225,6 +326,12 @@ class GameSpec extends Specification {
         void drawPlayerHands()
 
         def getHandSize()
+
+        def declareLoser(Player player)
+
+        Player getWinner()
+
+        def getTimeline()
     }
 
     class TwoPlayerMatch implements Match {
@@ -232,30 +339,26 @@ class GameSpec extends Specification {
         Player firstPlayer
         Player secondPlayer
         Player currentPlayer
+        Player winner
+        List timeline = []
         DeterminePlayerForTurnOne determinePlayerForTurnOne
         def handSize = 2
 
-        Player findLoser() {
-            if (firstPlayer.health <= 0) {
-                return firstPlayer
-            }
-            if (secondPlayer.health <= 0) {
-                return secondPlayer
-            }
-            if (firstPlayer.deck.cards.isEmpty()) {
-                return firstPlayer
-            }
-            if (secondPlayer.deck.cards.isEmpty()) {
-                return secondPlayer
-            }
+        Player getLoser() {
+            winner == firstPlayer ? secondPlayer : firstPlayer
         }
 
         boolean isOver() {
-            findLoser()
+            getLoser()
         }
 
         void nextTurn() {
-            currentPlayer = determinePlayerForTurnOne.from(firstPlayer, secondPlayer)
+            if (currentPlayer == null)
+                currentPlayer = determinePlayerForTurnOne.from(firstPlayer, secondPlayer)
+            else
+                currentPlayer = currentPlayer == firstPlayer ? secondPlayer : firstPlayer
+            currentPlayer.drawCard()
+            currentPlayer.whatDoYouWantToDoThisTurn()
         }
 
         @Override
@@ -268,6 +371,11 @@ class GameSpec extends Specification {
         def shufflePlayerDecks() {
             firstPlayer.shuffleDeck()
             secondPlayer.shuffleDeck()
+        }
+
+        @Override
+        def declareLoser(Player player) {
+            winner = player == firstPlayer ? secondPlayer : firstPlayer
         }
     }
 
@@ -283,8 +391,14 @@ class GameSpec extends Specification {
         }
 
         def drawCard() {
-            if (!deck.isEmpty())
+            if (!deck.isEmpty())  {
                 hand << deck.nextCard()
+                //match.drawn(hand.last())
+                // match.drawn(this)
+                match.timeline << [name: "d" + hand.last().name]
+            }
+            else
+                match.declareLoser(this)
         }
 
         void shuffleDeck() {
@@ -296,6 +410,9 @@ class GameSpec extends Specification {
 
         def drawHand() {
             match.handSize.times { drawCard() }
+        }
+
+        def whatDoYouWantToDoThisTurn() {
         }
     }
 
